@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "drawer-storage:block/drawer"
+    }
+  }
+}
