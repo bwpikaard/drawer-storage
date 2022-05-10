@@ -2,31 +2,17 @@ package com.pikaard.drawer.storage;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.Direction;
 
-public interface ImplementedInventory extends Inventory {
-
+public interface BasicSidedInventory extends SidedInventory {
     /**
      * Retrieves the item list of this inventory.
      * Must return the same instance every time it's called.
      */
     DefaultedList<ItemStack> getItems();
-
-    /**
-     * Creates an inventory from the item list.
-     */
-    static ImplementedInventory of(DefaultedList<ItemStack> items) {
-        return () -> items;
-    }
-
-    /**
-     * Creates a new inventory with the specified size.
-     */
-    static ImplementedInventory ofSize(int size) {
-        return of(DefaultedList.ofSize(size, ItemStack.EMPTY));
-    }
 
     /**
      * Returns the inventory size.
@@ -38,6 +24,7 @@ public interface ImplementedInventory extends Inventory {
 
     /**
      * Checks if the inventory is empty.
+     *
      * @return true if this inventory has only empty stacks, false otherwise.
      */
     @Override
@@ -61,6 +48,7 @@ public interface ImplementedInventory extends Inventory {
 
     /**
      * Removes items from an inventory slot.
+     *
      * @param slot  The slot to remove from.
      * @param count How many items to remove. If there are less items in the slot than what are requested,
      *              takes all items in that slot.
@@ -76,6 +64,7 @@ public interface ImplementedInventory extends Inventory {
 
     /**
      * Removes all items from an inventory slot.
+     *
      * @param slot The slot to remove from.
      */
     @Override
@@ -85,8 +74,9 @@ public interface ImplementedInventory extends Inventory {
 
     /**
      * Replaces the current stack in an inventory slot with the provided stack.
-     * @param slot  The inventory slot of which to replace the itemstack.
-     * @param stack The replacing itemstack. If the stack is too big for
+     *
+     * @param slot  The inventory slot of which to replace the ItemStack.
+     * @param stack The replacing ItemStack. If the stack is too big for
      *              this inventory ({@link Inventory#getMaxCountPerStack()}),
      *              it gets resized to this inventory's maximum amount.
      */
@@ -113,7 +103,7 @@ public interface ImplementedInventory extends Inventory {
      */
     @Override
     default void markDirty() {
-        this.markDirty();
+        // Override if you want behavior.
     }
 
     /**
@@ -122,5 +112,25 @@ public interface ImplementedInventory extends Inventory {
     @Override
     default boolean canPlayerUse(PlayerEntity player) {
         return true;
+    }
+
+    @Override
+    default int[] getAvailableSlots(Direction dir) {
+        // Just return an array of all slots
+        int[] result = new int[getItems().size()];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = i;
+        }
+        return result;
+    }
+
+    @Override
+    default boolean canInsert(int slot, ItemStack stack, Direction direction) {
+        return isValid(slot, stack);
+    }
+
+    @Override
+    default boolean canExtract(int slot, ItemStack stack, Direction direction) {
+        return isValid(slot, stack);
     }
 }
