@@ -20,6 +20,11 @@
   "entrypoints": {
     "main": [
       "com.pikaard.drawer.storage.DrawerStorage"
+    ],
+    "client": [
+      {
+        "value": "com.pikaard.drawer.storage.DrawerStorageClient"
+      }
     ]
   },
   "mixins": [],

@@ -1,7 +1,19 @@
 {
   "variants": {
-    "": {
+    "facing=north": {
       "model": "drawer-storage:block/drawer"
+    },
+    "facing=east": {
+      "model": "drawer-storage:block/drawer",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "drawer-storage:block/drawer",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "drawer-storage:block/drawer",
+      "y": 270
     }
   }
 }
