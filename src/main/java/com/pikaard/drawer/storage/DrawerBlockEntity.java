@@ -29,13 +29,14 @@ public class DrawerBlockEntity extends BlockEntity implements ImplementedInvento
     @Override
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
+        this.items.clear();
         Inventories.readNbt(nbt, items);
     }
 
     @Override
     public void writeNbt(NbtCompound nbt) {
-        Inventories.writeNbt(nbt, items);
         super.writeNbt(nbt);
+        Inventories.writeNbt(nbt, items);
     }
 
     public void updateListeners() {
@@ -51,6 +52,8 @@ public class DrawerBlockEntity extends BlockEntity implements ImplementedInvento
 
     @Override
     public NbtCompound toInitialChunkDataNbt() {
-        return createNbt();
+        NbtCompound nbtCompound = new NbtCompound();
+        Inventories.writeNbt(nbtCompound, this.items, true);
+        return nbtCompound;
     }
 }
