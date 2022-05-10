@@ -37,12 +37,12 @@ public class DrawerBlock extends BlockWithEntity {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> stateManager) {
-        stateManager.add(Properties.FACING);
+        stateManager.add(FacingBlock.FACING);
     }
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return (BlockState) this.getDefaultState().with(Properties.FACING, ctx.getPlayerFacing().getOpposite());
+        return (BlockState) this.getDefaultState().with(FacingBlock.FACING, ctx.getPlayerFacing().getOpposite());
     }
 
     @Override
@@ -57,35 +57,33 @@ public class DrawerBlock extends BlockWithEntity {
 
     @Override
     public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity player, Hand hand, BlockHitResult blockHitResult) {
+        if (world.isClient) return ActionResult.SUCCESS;
+
         DrawerBlockEntity entity = (DrawerBlockEntity) world.getBlockEntity(blockPos);
 
-        if (entity instanceof DrawerBlockEntity) {
-            ItemStack itemStack = player.getStackInHand(hand);
+        ItemStack itemStack = player.getStackInHand(hand);
 
-            if (world.isClient && player.isSneaking()) {
-                if (!entity.getStack(0).isEmpty()) {
-                    player.getInventory().offerOrDrop(entity.getStack(0));
-                    entity.removeStack(0);
-                    world.playSound(null, blockPos, SoundEvents.ENTITY_ITEM_FRAME_REMOVE_ITEM, SoundCategory.BLOCKS, 1.0f, 1.0f);
+        if (player.isSneaking()) {
+            if (player.getStackInHand(hand).isEmpty() && !entity.getStack(0).isEmpty()) {
+                player.getInventory().offerOrDrop(entity.getStack(0));
+                entity.removeStack(0);
+                world.playSound(null, blockPos, SoundEvents.ENTITY_ITEM_FRAME_REMOVE_ITEM, SoundCategory.BLOCKS, 1.0f, 1.0f);
 
-                    return ActionResult.SUCCESS;
-                } else {
-                    player.sendMessage(new LiteralText("Empty!"), false);
-                }
-            } else if (!world.isClient) {
-                if (entity.getStack(0).isEmpty()) {
-                    entity.setStack(0, player.getStackInHand(hand).copy());
-                    player.getStackInHand(hand).setCount(0);
-                    world.playSound(null, blockPos, SoundEvents.ENTITY_ITEM_FRAME_ADD_ITEM, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                return ActionResult.SUCCESS;
+            } else {
+                return ActionResult.PASS;
+            }
+        } else {
+            if (entity.getStack(0).isEmpty()) {
+                entity.setStack(0, player.getStackInHand(hand).copy());
+                player.getStackInHand(hand).setCount(0);
+                world.playSound(null, blockPos, SoundEvents.ENTITY_ITEM_FRAME_ADD_ITEM, SoundCategory.BLOCKS, 1.0f, 1.0f);
 
-                    return ActionResult.SUCCESS;
-                } else {
-                    player.sendMessage(new LiteralText("Full!"), false);
-                }
+                return ActionResult.SUCCESS;
+            } else {
+                return ActionResult.PASS;
             }
         }
-
-        return ActionResult.PASS;
     }
 
 

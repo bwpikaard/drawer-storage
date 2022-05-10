@@ -103,7 +103,7 @@ public interface BasicSidedInventory extends SidedInventory {
      */
     @Override
     default void markDirty() {
-        // Override if you want behavior.
+        this.markDirty();
     }
 
     /**

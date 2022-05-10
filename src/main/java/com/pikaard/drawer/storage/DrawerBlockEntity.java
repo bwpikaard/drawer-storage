@@ -35,13 +35,14 @@ public class DrawerBlockEntity extends BlockEntity implements BasicSidedInventor
     @Override
     public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
-        Inventories.readNbt(tag, stacks);
+        this.stacks.clear();
+        Inventories.readNbt(tag, this.stacks);
         this.item = Registry.ITEM.get(Identifier.tryParse(tag.getString("item")));
     }
 
     @Override
     public void writeNbt(NbtCompound tag) {
-        Inventories.writeNbt(tag, this.stacks);
+        Inventories.writeNbt(tag, this.stacks, true);
         tag.putString("item", Registry.ITEM.getId(item).toString());
         super.writeNbt(tag);
     }
@@ -58,7 +59,17 @@ public class DrawerBlockEntity extends BlockEntity implements BasicSidedInventor
 
     @Override
     public ItemStack removeStack(int slot, int amount) {
+        System.out.println("remove!");
         ItemStack stack = stacks.get(slot).split(amount);
+        System.out.println(stack);
+        this.markDirty();
+        this.getWorld().updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), 3);
+        return stack;
+    }
+
+    @Override
+    public ItemStack removeStack(int slot) {
+        ItemStack stack = Inventories.removeStack(stacks, slot);
         this.markDirty();
         this.getWorld().updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), 3);
         return stack;

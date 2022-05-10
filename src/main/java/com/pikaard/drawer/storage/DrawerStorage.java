@@ -44,11 +44,8 @@ public class DrawerStorage implements ModInitializer {
         );
 
         UseBlockCallback.EVENT.register((PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) ->{
-            if (player.isSneaking() && world.getBlockEntity(hitResult.getBlockPos()) instanceof DrawerBlockEntity) {
-                System.out.println("Yeah!");
-                world.getBlockState(hitResult.getBlockPos()).onUse(world, player, hand, hitResult);
-
-                return ActionResult.CONSUME;
+            if (!world.isClient && player.isSneaking() && world.getBlockEntity(hitResult.getBlockPos()) instanceof DrawerBlockEntity) {
+                return world.getBlockState(hitResult.getBlockPos()).onUse(world, player, hand, hitResult);
             }
 
             return ActionResult.PASS;
